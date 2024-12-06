@@ -4,6 +4,8 @@ import {
   ViroText,
   ViroTrackingReason,
   ViroTrackingStateConstants,
+  Viro3DObject,
+  ViroAmbientLight
 } from "@reactvision/react-viro";
 import React, { useState } from "react";
 import { StyleSheet } from "react-native";
@@ -19,15 +21,27 @@ const HelloWorldSceneAR = () => {
       // Handle loss of tracking
     }
   }
+  
+
 
   return (
     <ViroARScene onTrackingUpdated={onInitialized}>
-      <ViroText
+      {/* <ViroText
         text={text}
         scale={[0.5, 0.5, 0.5]}
         position={[0, 0, -1]}
         style={styles.helloWorldTextStyle}
-      />
+      /> */}
+      <ViroAmbientLight color="#ffffff" intensity={200}/>
+      <Viro3DObject
+          source={require("./assets/model/myModel.gltf")}
+          type="gltf"
+          resources={[
+            require("./assets/model/myModel_0.bin")
+          ]}
+          scale={[ 0.5, 0.5, 0.5 ]}
+          position={[ -1, 0, -1 ]}
+        />
     </ViroARScene>
   );
 };
