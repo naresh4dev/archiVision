@@ -5,6 +5,7 @@ import {
   ViroARSceneNavigator,
   Viro3DObject,
   ViroAmbientLight,
+  ViroNode, ViroARImageMarker, ViroARTrackingTargets,
 } from "@reactvision/react-viro";
 import { Camera, useCameraDevices, useCodeScanner } from "react-native-vision-camera";
 
@@ -12,6 +13,7 @@ const App = () => {
   const [currentScreen, setCurrentScreen] = useState<
     "Loading" | "Home" | "Scanner" | "ARScene1" | "ARScene2"
   >("Loading");
+  const [trackingTarget, setTrackingTarget] = useState("paperPlane");
   const codeScanner = useCodeScanner({
     codeTypes: ['qr', 'ean-13'],
     onCodeScanned: (codes) => {
@@ -21,7 +23,14 @@ const App = () => {
     }
   })
   
-
+  ViroARTrackingTargets.createTargets({
+    "paperPlane": {
+      source: require("./assets/plane.jpeg"), // Add your marker image
+      orientation: "Up",
+      physicalWidth: 0.2,
+       // Adjust the width in meters
+    },
+  });
   const devices = useCameraDevices();
   const device = devices.find((d) => d.position === "back"); // Correctly find the back camera
 
@@ -60,7 +69,7 @@ const App = () => {
     console.log("Scanned Data:", data); // Log the scanned data
     if (data === "model1") {
       setCurrentScreen("ARScene1"); // Navigate to AR Scene 1
-    } else if (data === "scene2") {
+    } else if (data === "model2") {
       setCurrentScreen("ARScene2"); // Navigate to AR Scene 2
     } else {
       console.warn("Unknown scene: ", data); // Handle unknown scenes
@@ -123,7 +132,7 @@ const App = () => {
     );
   }
 
-  if (currentScreen === "ARScene1" || currentScreen === "ARScene2") {
+  if (currentScreen === "ARScene1") {
     return (
       <ViroARSceneNavigator
         autofocus={true}
@@ -132,16 +141,42 @@ const App = () => {
             <ViroARScene>
               <ViroAmbientLight color="#ffffff" intensity={200} />
               <Viro3DObject
-                source={require("./assets/model/myModel.gltf")}
+                source={require("./assets/model/clubhouse.gltf")}
                 type="GLTF" 
-                resources={[require("./assets/model/myModel_0.bin")]}
-                scale={[0.5, 0.5, 0.5]}
-                position={[-1, 0, -1]}
+                scale={[0.4, 0.4, 0.4]}
+                position={[-1, 1, -1]}
+                dragType="FixedToWorld"
               />
             </ViroARScene>
           ),
         }}
         style={styles.f1}
+      />
+    );
+  }
+  if (currentScreen == "ARScene2") {
+    console.log("In");
+    return (
+      <ViroARSceneNavigator
+      autofocus={true}
+       initialScene={{
+        scene:()=>(
+          <ViroARScene>
+      <ViroARImageMarker target={trackingTarget}>
+        
+        <ViroAmbientLight color="#ffffff" intensity={200} />
+        <Viro3DObject
+                source={require("./assets/model/towersclubhouse.gltf")}
+                type="GLTF" 
+                scale={[0.4, 0.4, 0.4]}
+                position={[-1, 1, -1]}
+              />
+        
+      </ViroARImageMarker>
+    </ViroARScene>
+    ),      
+  }}
+       style={styles.f1}
       />
     );
   }
