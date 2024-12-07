@@ -9,4 +9,16 @@ project(':arcore_client').projectDir = new File('../node_modules/@reactvision/re
 project(':gvr_common').projectDir = new File('../node_modules/@reactvision/react-viro/android/gvr_common')
 project(':viro_renderer').projectDir = new File('../node_modules/@reactvision/react-viro/android/viro_renderer')
 project(':react_viro').projectDir = new File('../node_modules/@reactvision/react-viro/android/react_viro')
+include ':react-native-camera'
+project(':react-native-camera').projectDir = new File(rootProject.projectDir,   '../node_modules/react-native-camera/android')
+// project(':react-native-camera').buildTypes {
+//     debug {
+//         flavorDimensions "camera"
+//         productFlavors {
+//             general {
+//                 dimension "camera"
+//             }
+//         }
+//     }
+// }
     

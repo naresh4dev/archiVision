@@ -1,6 +1,6 @@
 package com.virostarterkit
 import com.viromedia.bridge.ReactViroPackage
-
+import org.reactnative.camera.RNCameraPackage;
 import android.app.Application
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
@@ -25,6 +25,7 @@ class MainApplication : Application(), ReactApplication {
               // https://viro-community.readme.io/docs/installation-instructions#5-now-add-the-viro-package-to-your-mainapplication
               add(ReactViroPackage(ReactViroPackage.ViroPlatform.GVR))
               add(ReactViroPackage(ReactViroPackage.ViroPlatform.AR))
+              RNCameraPackage()
             }
 
         override fun getJSMainModuleName(): String = "index"
