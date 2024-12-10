@@ -13,7 +13,7 @@ import {
 import { Camera, useCameraDevices, useCodeScanner } from "react-native-vision-camera";
 
 const App = () => {
-  const [currentScreen, setCurrentScreen] = useState("ARScene2");
+  const [currentScreen, setCurrentScreen] = useState("Loading");
   const [trackingTarget, setTrackingTarget] = useState("paperPlane");
   const [modelPosition, setModelPosition] = useState([0, -5, -10]);
   const [modelScale, setModelScale] = useState([0.01,0.01,0.01]);
@@ -32,10 +32,15 @@ const App = () => {
     "paperPlane": {
       source: require("./assets/plane.jpeg"), // Add your marker image
       orientation: "Up",
-      physicalWidth: 0.2,
+      physicalWidth: 1.3,
 
        // Adjust the width in meters
     },
+    floorPlane:{
+      source:require("./assets/plane2.jpeg"),
+      orientation: "Up",
+      physicalWidth: 0.2,
+    }
   });
   const devices = useCameraDevices();
   const device = devices.find((d) => d.position === "back"); // Correctly find the back camera
@@ -73,8 +78,8 @@ const App = () => {
   const handleTouch = (position) => {
     console.log(position);
     
-      setModelPosition(position);
-      setIsModelVisible(true)
+    setModelPosition(position);
+      
   };
 
   const handleScan = (data) => {
@@ -83,7 +88,9 @@ const App = () => {
       setCurrentScreen("ARScene1"); // Navigate to AR Scene 1
     } else if (data === "model2") {
       setCurrentScreen("ARScene2"); // Navigate to AR Scene 2
-    } else {
+    } else if (data == "model3") {
+      setCurrentScreen("ARScene3");
+    } else  {
       console.warn("Unknown scene: ", data); // Handle unknown scenes
     }
   };
@@ -154,14 +161,14 @@ const App = () => {
         initialScene={{
           scene: () => (
             <ViroARScene >
-              <ViroNode onClick={(position, source) => handleTouch(position)} style={styles.f1} height={2}>
-              <ViroAmbientLight color="#ffffff" intensity={300} />
-              <ViroBox position={[0, .25, 0]} scale={[.5, .5, .5]} />
-             { isModelVisible &&  <Viro3DObject
+              <ViroNode  style={styles.f1} height={2}>
+              <ViroAmbientLight color="#ffffff" intensity={600} />
+              {/* <ViroARPlaneSelector onPlaneSelected={(anchor) => handleTouch(anchor.position)}> */}
+              <Viro3DObject
                 source={require("./assets/model/11MODEL.gltf")}
                 type="GLTF" 
-                scale={[0.2, 0.2, 0.2]}
-                position={modelPosition}
+                scale={[0.12, 0.12, 0.12]}
+                position={[0,0,-2]}
                 resources={[require("./assets/model/11MODEL_0.bin"),
                   require("./assets/model/textures/image_0.png"),
                   require("./assets/model/textures/image_1.png"),
@@ -200,7 +207,9 @@ const App = () => {
                   require("./assets/model/textures/image_35.png"),
 
                 ]}
-              />}
+              />
+              {/* </ViroARPlaneSelector> */}
+              
               </ViroNode>
             </ViroARScene>
           ),
@@ -220,10 +229,10 @@ const App = () => {
       <ViroARImageMarker target={trackingTarget} onAnchorFound={handleAnchorFound}
         onAnchorRemoved={() => console.log('Anchor removed!')}
         >
-        <ViroAmbientLight color="#ffffff" intensity={600} />
+        <ViroAmbientLight color="#ffffff" intensity={500} />
         <ViroDirectionalLight
   color="#ffffff"
-  direction={[0, -1, -0.2]}
+  direction={[0, 10, -0.2]}
   intensity={500}
 />
 
@@ -254,8 +263,14 @@ const App = () => {
                 ]}
                 type="GLTF" 
                 scale={[0.01,0.01,0.01]}
-                position={[0,-2,0]}
+                position={[0,0,0]}
               />
+              {/* <Viro3DObject
+                source={require("./assets/model/papermodel-2.glb")}
+                type="GLB" 
+                scale={[0.15,0.15,0.15]}
+                position={[0,0,0]}
+              /> */}
         
       </ViroARImageMarker>
     </ViroARScene>
@@ -268,17 +283,37 @@ const App = () => {
   }
   if (currentScreen == "ARScene3") {
     return (
-      <ViroARPlaneSelector
-    minHeight={.5}
-    minWidth={.5}
-    onPlaneSelected={(res)=>{console.log(res)}}
->
-    <ViroBox
-        position={[0, .25, 0]}
-        scale={[.5, .5, .5]}
-    />
-</ViroARPlaneSelector>
-    )
+      <ViroARSceneNavigator
+      
+      autofocus={true}
+       initialScene={{
+        scene:()=>(
+          <ViroARScene>
+      <ViroARImageMarker target={"floorPlane"} onAnchorFound={handleAnchorFound}
+        onAnchorRemoved={() => console.log('Anchor removed!')}
+        >
+        <ViroAmbientLight color="#ffffff" intensity={500} />
+        <ViroDirectionalLight
+  color="#ffffff"
+  direction={[0, 10, -0.2]}
+  intensity={500}
+/>
+
+        <Viro3DObject
+                source={require("./assets/model/floorplan.glb")}
+                type="GLB" 
+                scale={[0.15,0.15,0.15]}
+                position={[-3,-10,-1]}
+              />
+        
+      </ViroARImageMarker>
+    </ViroARScene>
+    ),
+    
+  }}
+       style={styles.f1}
+      />
+    );
   }
 
   return null; // Fallback if no screen matches
